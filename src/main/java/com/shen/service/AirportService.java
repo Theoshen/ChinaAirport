@@ -129,6 +129,7 @@ public class AirportService {
             area.setAreaId(id);
             area.setList(airports);
             area.setAreaName(areaName);
+            System.out.println(area);
             areaList.add(area);
         }
         Integer i1 = areaList.size();
