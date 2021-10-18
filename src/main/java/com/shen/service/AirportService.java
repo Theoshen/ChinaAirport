@@ -113,7 +113,8 @@ public class AirportService {
     public void start() throws IOException {
         String[] areaIds = UrlConstant.AREAIDS;
         List<Area> areaList = new ArrayList<>();
-        for (String id : areaIds) {
+        String id = " 4";
+//        for (String id : areaIds) {
             JSONObject jsonObject = getJson(id);
             // 获取地区名称
             String areaName = jsonObject.get("title").toString();
@@ -131,11 +132,22 @@ public class AirportService {
             area.setAreaName(areaName);
             System.out.println(area);
             areaList.add(area);
-        }
-        Integer i1 = areaList.size();
-
-        String json = JSON.toJSONString(areaList);
-
+//        }
         System.out.println(areaList);
+    }
+
+    /**
+     * @Description 测试有问题的数据
+     * @author chensihua
+     * @param
+     * @createTime 11:10 下午 2021/10/18
+     * @return void
+     * @version 1.0.0
+     */
+    public void test() throws  IOException{
+        Airport airport = new Airport();
+        // todo 有些数据多出一些空格，导致截取空格字符串会错位，待解决
+        airport = setAirport("174",airport);
+        System.out.println(airport);
     }
 }

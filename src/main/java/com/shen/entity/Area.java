@@ -14,11 +14,16 @@ import java.util.List;
  * @createTime 2021年10月09日 14:09:00
  */
 @Data
-public class Area implements Serializable {
+public class Area implements Comparable<Area> {
 
     private String areaName;
 
     private String areaId;
 
     private List<Airport> list;
+
+    @Override
+    public int compareTo(Area o) {
+        return (Integer.parseInt(this.areaId) - Integer.parseInt(o.areaId));
+    }
 }
