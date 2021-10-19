@@ -1,10 +1,14 @@
 package com.shen.utils;
 
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
 import com.shen.entity.Airport;
 import com.shen.entity.Area;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
@@ -71,22 +75,9 @@ public class ExcelUtil {
             altitude.setCellValue(airport.getAltitude());
             Cell runway = rowData.createCell(10);
             runway.setCellValue(airport.getRunway());
-
-//                Cell cell4 = rowData.createCell(3);
-//                cell4.setCellValue(airport.getPhone());
-//                Cell cell4 = rowData.createCell(3);
-//                cell4.setCellValue(airport.getPhone());
-//                Cell cell4 = rowData.createCell(3);
-//                cell4.setCellValue(airport.getPhone());
-//                Cell cell4 = rowData.createCell(3);
-//                cell4.setCellValue(airport.getPhone());
-//                Cell cell4 = rowData.createCell(3);
-//                cell4.setCellValue(airport.getPhone());
-//                Cell cell4 = rowData.createCell(3);
-//                cell4.setCellValue(airport.getPhone());
     }
 
-    String fileName = "/Users/mac/Dev/Project/ChinaAirport/中国民用机场名单.xlsx";
+    String fileName = "/Users/sihua/Data/Developer/Project/ChinaAirport/中国民用机场名单.xlsx";
         try
 
     {
@@ -100,5 +91,19 @@ public class ExcelUtil {
         e.printStackTrace();
     }
 }
+
+    public static void EasyExport(List<Airport> list) throws IOException {
+        Workbook workbook = ExcelExportUtil.exportExcel( new ExportParams("中国机场", null, "运输机场"),
+                Airport.class, list);
+
+        File savefile = new File("/Users/sihua/Data/Developer/Project/ChinaAirport/");
+        if (!savefile.exists()) {
+            savefile.mkdirs();
+        }
+        FileOutputStream fos = new FileOutputStream("/Users/sihua/Data/Developer/Project/ChinaAirport/中国机场.xls");
+        workbook.write(fos);
+        fos.close();
+    }
+
 
 }

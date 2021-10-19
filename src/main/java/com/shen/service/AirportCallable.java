@@ -36,13 +36,15 @@ public class AirportCallable implements Callable<Area> {
         List<Airport> airports = new ArrayList<>();
         for (Airport airport : list) {
             airport = AirportService.setAirport(airport.getId(),airport);
-            System.out.println(airport);
             airports.add(airport);
         }
         Area area = new Area();
         area.setAreaId(id);
         area.setList(airports);
         area.setAreaName(areaName);
+        System.out.println(area);
         return area;
     }
+
+
 }

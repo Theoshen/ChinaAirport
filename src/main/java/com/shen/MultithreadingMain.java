@@ -1,5 +1,6 @@
 package com.shen;
 
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import com.shen.config.UrlConstant;
 import com.shen.entity.Airport;
 import com.shen.entity.Area;
@@ -67,6 +68,7 @@ public class MultithreadingMain {
         logger.info("程序运行时间:" + (endTime-startTime) + "ms");
         logger.info("=================程序运行结束=================");
 
-//        ExcelUtil.ExportExcel(airports);
+        ExcelUtil.EasyExport(airports);
+
     }
 }

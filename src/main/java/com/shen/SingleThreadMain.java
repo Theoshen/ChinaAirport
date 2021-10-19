@@ -3,6 +3,7 @@ package com.shen;
 import com.shen.config.UrlConstant;
 import com.shen.entity.Area;
 import com.shen.service.AirportService;
+import com.shen.utils.ExcelUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -26,8 +27,8 @@ public class SingleThreadMain {
         Long startTime = System.currentTimeMillis();
         // 单线程版本
         logger.info("=================程序开始运行=================");
-//        new AirportService().start();
-        new AirportService().test();
+        new AirportService().start();
+//        new AirportService().test();
         Long endTime = System.currentTimeMillis();
         logger.info("程序运行时间:" + (endTime-startTime) + "ms");
         logger.info("=================程序运行结束=================");

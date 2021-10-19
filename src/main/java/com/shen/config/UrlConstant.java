@@ -10,7 +10,19 @@ package com.shen.config;
  */
 public class UrlConstant {
 
+    /**
+     * @Description 中国机场网
+     * @author chensihua
+     * @createTime 13:09 2021/10/19
+     */
     public static final String BASE_URL = "https://www.chinairport.net/";
 
-    public static final String[] AREAIDS = {"1","2","3","4","5","6"};
+    /**
+     * @Description 中国机场网地区 id 集
+     * @author chensihua
+     * @createTime 13:10 2021/10/19
+     */
+    public static final String[] AREAIDS = {"1","2","3","4","5","6","7"};
+
+
 }
