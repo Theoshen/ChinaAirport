@@ -28,7 +28,6 @@ public class SingleThreadMain {
         // 单线程版本
         logger.info("=================程序开始运行=================");
         new AirportService().start();
-//        new AirportService().test();
         Long endTime = System.currentTimeMillis();
         logger.info("程序运行时间:" + (endTime-startTime) + "ms");
         logger.info("=================程序运行结束=================");
