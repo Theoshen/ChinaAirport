@@ -2,6 +2,7 @@ package com.shen.utils;
 
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
+import com.shen.config.SavePathConstant;
 import com.shen.entity.Airport;
 import com.shen.entity.Area;
 import org.apache.poi.ss.usermodel.*;
@@ -96,11 +97,11 @@ public class ExcelUtil {
         Workbook workbook = ExcelExportUtil.exportExcel( new ExportParams("中国机场", null, "运输机场"),
                 Airport.class, list);
 
-        File savefile = new File("/Users/sihua/Data/Developer/Project/ChinaAirport/");
+        File savefile = new File(SavePathConstant.ACER_V5_572G);
         if (!savefile.exists()) {
             savefile.mkdirs();
         }
-        FileOutputStream fos = new FileOutputStream("/Users/sihua/Data/Developer/Project/ChinaAirport/中国机场.xls");
+        FileOutputStream fos = new FileOutputStream(SavePathConstant.ACER_V5_572G + "/中国机场.xls");
         workbook.write(fos);
         fos.close();
     }

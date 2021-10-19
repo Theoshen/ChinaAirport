@@ -1,16 +1,10 @@
 package com.shen;
 
-import com.shen.config.UrlConstant;
-import com.shen.entity.Area;
 import com.shen.service.AirportService;
-import com.shen.utils.ExcelUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.*;
 
 /**
  * @author chensihua
@@ -24,12 +18,14 @@ public class SingleThreadMain {
     private static final Logger logger = LogManager.getLogger(SingleThreadMain.class);
 
     public static void main(String[] args) throws IOException {
-        Long startTime = System.currentTimeMillis();
-        // 单线程版本
         logger.info("=================程序开始运行=================");
+        //获取开始时间
+        long startTime = System.currentTimeMillis();
         new AirportService().start();
-        Long endTime = System.currentTimeMillis();
-        logger.info("程序运行时间:" + (endTime-startTime) + "ms");
+        //获取结束时间
+        long endTime = System.currentTimeMillis();
+        //输出程序运行时间
         logger.info("=================程序运行结束=================");
+        logger.info("程序运行时间：" + (endTime - startTime) + "ms");
     }
 }
