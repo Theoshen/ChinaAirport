@@ -1,6 +1,6 @@
 package com.shen.service;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import com.shen.entity.Airport;
 import com.shen.entity.Area;
 import com.shen.service.AirportService;

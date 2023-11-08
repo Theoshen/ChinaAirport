@@ -97,11 +97,11 @@ public class ExcelUtil {
         Workbook workbook = ExcelExportUtil.exportExcel( new ExportParams("中国机场", null, "运输机场"),
                 Airport.class, list);
 
-        File savefile = new File(SavePathConstant.ACER_V5_572G);
+        File savefile = new File(SavePathConstant.LINUX);
         if (!savefile.exists()) {
             savefile.mkdirs();
         }
-        FileOutputStream fos = new FileOutputStream(SavePathConstant.ACER_V5_572G + "/中国机场.xls");
+        FileOutputStream fos = new FileOutputStream(SavePathConstant.LINUX + "/中国机场.xls");
         workbook.write(fos);
         fos.close();
     }
