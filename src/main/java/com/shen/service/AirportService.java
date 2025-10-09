@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author chensihua
@@ -39,21 +41,19 @@ public class AirportService {
      * @version 1.0.0
      */
     public static List<Airport> getAirports(JSONObject jsonObject) {
-        JSONArray recordMap = JSON.parseArray(jsonObject.get("data").toString());
-        String title = jsonObject.get("title").toString();
-        title = title.substring(0,title.indexOf("运"));
-        List<String[]> list = recordMap.toJavaList(String[].class);
+        JSONArray recordMap = jsonObject.getJSONArray("data"); // Directly use getJSONArray
+        String title = jsonObject.getString("title");
+        title = title.substring(0, title.indexOf("运"));
+
         List<Airport> airports = new ArrayList<>();
-        for (String[] strings : list) {
+        for (int i = 0; i < recordMap.size(); i++) {
+            JSONArray airportInfo = recordMap.getJSONArray(i);
+
             Airport airPort = new Airport();
-            for (int i = 0; i < strings.length; i++) {
-                airPort.setArea(title);
-                if (i == 0) {
-                    airPort.setName(strings[i]);
-                } else if (i == 2) {
-                    airPort.setId(strings[i]);
-                }
-            }
+            airPort.setArea(title);
+            airPort.setName(airportInfo.getString(0)); // Airport Name
+            airPort.setId(airportInfo.getString(2)); // ID
+
             airports.add(airPort);
         }
 
@@ -69,75 +69,80 @@ public class AirportService {
     }
 
     public static Airport setAirport(String id, Airport airport) throws IOException {
-        String url = "https://www.chinairport.net/airport/" + id;
+        String url = "http://www.chinairport.net/airport/" + id;
         Document document = Jsoup.connect(url).get();
         Elements element = document.select(".airport_can");
         String str = element.text();
         for (Element element1 : element) {
             str = element1.text();
         }
-        String cut = " ";
-        String[] newStr = str.split(cut);
+        String[] newStr = str.split(" ");
         List<String> list = Arrays.asList(newStr);
-        List<String> strings = new ArrayList<>();
+
+        Map<Integer, String> fieldMap = new HashMap<>();
+        fieldMap.put(0, "Iata");
+        fieldMap.put(1, "Icao");
+        fieldMap.put(2, "Level");
+        fieldMap.put(3, "Altitude");
+        fieldMap.put(4, "Type");
+        fieldMap.put(5, "Runway");
+        fieldMap.put(7, "Latitude");
+        fieldMap.put(8, "Longitude");
+        fieldMap.put(10, "Address");
+
         for (int i = 0; i < list.size(); i++) {
-            if (!list.get(i).contains(":")) {
-                list.set(i - 1, list.get(i - 1) + list.get(i));
-            }
-        }
-        for (String s : list) {
-            if (!s.contains(":")){
+            String value = list.get(i);
+            if (!value.contains(":"))
                 continue;
-            }else {
-                s = s.substring(s.indexOf(":") + 1);
-                strings.add(s);
-            }
-        }
 
-
-        for (int i = 0; i < strings.size(); i++) {
-            switch (i) {
-                case 0:
-                    airport.setIata(strings.get(i));
-                    break;
-                case 1:
-                    airport.setIcao(strings.get(i));
-                    break;
-                case 2:
-                    airport.setLevel(strings.get(i));
-                    break;
-                case 3:
-                    airport.setAltitude(strings.get(i));
-                    break;
-                case 4:
-                    airport.setType(strings.get(i));
-                    break;
-                case 5:
-                    airport.setRunway(strings.get(i));
-                    break;
-                case 7:
-                    airport.setLatitude(strings.get(i));
-                    break;
-                case 8:
-                    airport.setLongitude(strings.get(i));
-                    break;
-                case 10:
-                    airport.setAddress(strings.get(i));
-                    break;
-                default:
+            String fieldName = fieldMap.get(i);
+            if (fieldName != null) {
+                value = value.substring(value.indexOf(":") + 1);
+                setField(airport, fieldName, value);
             }
         }
         return airport;
     }
 
-
-
+    private static void setField(Airport airport, String fieldName, String value) {
+        switch (fieldName) {
+            case "Iata":
+                airport.setIata(value);
+                break;
+            case "Icao":
+                airport.setIcao(value);
+                break;
+            case "Level":
+                airport.setLevel(value);
+                break;
+            case "Altitude":
+                airport.setAltitude(value);
+                break;
+            case "Type":
+                airport.setType(value);
+                break;
+            case "Runway":
+                airport.setRunway(value);
+                break;
+            case "Latitude":
+                airport.setLatitude(value);
+                break;
+            case "Longitude":
+                airport.setLongitude(value);
+                break;
+            case "Address":
+                airport.setAddress(value);
+                break;
+            default:
+                break;
+        }
+    }
 
     public void start() throws IOException {
         String[] areaIds = UrlConstant.AREAIDS;
         List<Area> areaList = new ArrayList<>();
-        String id = " 4";
-//        for (String id : areaIds) {
+        String id = "1";
+        // for (String id : areaIds) {
         JSONObject jsonObject = getJson(id);
         // 获取地区名称
         String areaName = jsonObject.get("title").toString();
@@ -158,7 +163,7 @@ public class AirportService {
             System.out.println(airport);
         }
         areaList.add(area);
-//        }
+        // }
         ExcelUtil.ExportExcel(airports);
     }
 }

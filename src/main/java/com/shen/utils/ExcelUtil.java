@@ -24,31 +24,30 @@ import java.util.List;
  */
 public class ExcelUtil {
 
-    private static String[] titles = {"地区","名称","地址","等级", "IATA", "ICAO", "机场类型","经度","纬度","海拔高度","跑道数量"};
-
+    private static String[] titles = { "地区", "名称", "地址", "等级", "IATA", "ICAO", "机场类型", "经度", "纬度", "海拔高度", "跑道数量" };
 
     public static void ExportExcel(List<Airport> list) {
         SXSSFWorkbook wb = new SXSSFWorkbook(100);
         Sheet sheet = wb.createSheet();
         Row row = sheet.createRow(0);
-        //给单元格设置样式
+        // 给单元格设置样式
         CellStyle cellStyle = wb.createCellStyle();
         Font font = wb.createFont();
-        //设置字体大小
+        // 设置字体大小
         font.setFontHeightInPoints((short) 12);
-        //设置字体加粗
+        // 设置字体加粗
         font.setBold(true);
-        //给字体设置样式
+        // 给字体设置样式
         cellStyle.setFont(font);
-        //设置单元格背景颜色
+        // 设置单元格背景颜色
         cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-        //设置单元格填充样式(使用纯色背景颜色填充)
+        // 设置单元格填充样式(使用纯色背景颜色填充)
         cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         for (int i = 0; i < titles.length; i++) {
             Cell cell = row.createCell(i);
             cell.setCellValue(titles[i]);
             cell.setCellStyle(cellStyle);
-            //设置列的宽度
+            // 设置列的宽度
             sheet.setColumnWidth(i, 200 * 50);
         }
         for (int j = 0; j < list.size(); j++) {
@@ -76,25 +75,24 @@ public class ExcelUtil {
             altitude.setCellValue(airport.getAltitude());
             Cell runway = rowData.createCell(10);
             runway.setCellValue(airport.getRunway());
-    }
+        }
 
-    String fileName = "/Users/sihua/Data/Developer/Project/ChinaAirport/中国民用机场名单.xlsx";
+        String fileName = "/中国民用机场名单.xlsx";
         try
 
-    {
-        FileOutputStream fileOutputStream = new FileOutputStream(fileName);
-        wb.write(fileOutputStream);
-        wb.close();
-    } catch(
-    IOException e)
+        {
+            FileOutputStream fileOutputStream = new FileOutputStream(SavePathConstant.LINUX + fileName);
+            wb.write(fileOutputStream);
+            wb.close();
+        } catch (IOException e)
 
-    {
-        e.printStackTrace();
+        {
+            e.printStackTrace();
+        }
     }
-}
 
     public static void EasyExport(List<Airport> list) throws IOException {
-        Workbook workbook = ExcelExportUtil.exportExcel( new ExportParams("中国机场", null, "运输机场"),
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams("中国机场", null, "运输机场"),
                 Airport.class, list);
 
         File savefile = new File(SavePathConstant.LINUX);
@@ -105,6 +103,5 @@ public class ExcelUtil {
         workbook.write(fos);
         fos.close();
     }
-
 
 }
