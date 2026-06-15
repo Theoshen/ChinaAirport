@@ -1,3 +1,8 @@
 .vscode/
 *.class
 bin/
+target/
+output/
+.mvn/wrapper/apache-maven-*/
+.mvn/wrapper/*.zip
+.mvn/repository/

@@ -1,6 +1,5 @@
 package com.shen;
 
-import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import com.shen.config.UrlConstant;
 import com.shen.entity.Airport;
 import com.shen.entity.Area;
@@ -16,7 +15,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.ExecutorService;
 
 /**
  * @author chensihua
@@ -30,33 +29,29 @@ public class MultithreadingMain {
     private static final Logger logger = LogManager.getLogger(MultithreadingMain.class);
 
     public static void main(String[] args) throws IOException, ExecutionException, InterruptedException {
-        Long startTime = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
         logger.info("=================程序开始运行=================");
         // 多线程版本
         String[] ids = UrlConstant.AREAIDS;
         List<Future<Area>> futureList = new ArrayList<>();
         List<Area> areaList = new ArrayList<>();
-        ThreadPoolExecutor tpc = (ThreadPoolExecutor) Executors.newFixedThreadPool(ids.length);
-        for (String id : ids) {
-            AirportCallable airport = new AirportCallable(id);
-            Future<Area> result = tpc.submit(airport);
-            futureList.add(result);
-        }
-        //创建一个循环来监控执行器的状态
+        ExecutorService executorService = Executors.newFixedThreadPool(ids.length);
         try {
-            while (tpc.getCompletedTaskCount() < futureList.size()) {
-                Thread.sleep(50);
+            for (String id : ids) {
+                AirportCallable airport = new AirportCallable(id);
+                Future<Area> result = executorService.submit(airport);
+                futureList.add(result);
             }
-            System.out.println("全部线程执行结束");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            // 处理数据（排序）
+            for (Future<Area> future : futureList) {
+                Area area = future.get();
+                areaList.add(area);
+            }
+        } finally {
+            executorService.shutdown();
         }
-        tpc.shutdownNow();
-        // 处理数据（排序）
-        for (Future<Area> future : futureList) {
-            Area area = future.get();
-            areaList.add(area);
-        }
+        System.out.println("全部线程执行结束");
+
         Collections.sort(areaList);
         List<Airport> airports = new ArrayList<>();
         for (Area area : areaList) {
@@ -64,7 +59,7 @@ public class MultithreadingMain {
         }
 
         System.out.println(areaList);
-        Long endTime = System.currentTimeMillis();
+        long endTime = System.currentTimeMillis();
         logger.info("程序运行时间:" + (endTime-startTime) + "ms");
         logger.info("=================程序运行结束=================");
 
