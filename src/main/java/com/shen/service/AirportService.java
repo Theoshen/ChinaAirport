@@ -10,13 +10,13 @@ import com.shen.utils.ExcelUtil;
 import com.shen.utils.HtmlParseUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +31,21 @@ import java.util.Map;
  */
 @Service
 public class AirportService {
+    private static final Map<Integer, String> AIRPORT_DETAIL_FIELD_MAP;
+
+    static {
+        Map<Integer, String> fieldMap = new HashMap<>();
+        fieldMap.put(0, "Iata");
+        fieldMap.put(1, "Icao");
+        fieldMap.put(2, "Level");
+        fieldMap.put(3, "Altitude");
+        fieldMap.put(4, "Type");
+        fieldMap.put(5, "Runway");
+        fieldMap.put(7, "Latitude");
+        fieldMap.put(8, "Longitude");
+        fieldMap.put(10, "Address");
+        AIRPORT_DETAIL_FIELD_MAP = Collections.unmodifiableMap(fieldMap);
+    }
 
     /**
      * @Description 境内机场
@@ -42,8 +57,7 @@ public class AirportService {
      */
     public static List<Airport> getAirports(JSONObject jsonObject) {
         JSONArray recordMap = jsonObject.getJSONArray("data"); // Directly use getJSONArray
-        String title = jsonObject.getString("title");
-        title = title.substring(0, title.indexOf("运"));
+        String title = getAreaTitle(jsonObject);
 
         List<Airport> airports = new ArrayList<>();
         for (int i = 0; i < recordMap.size(); i++) {
@@ -60,6 +74,18 @@ public class AirportService {
         return airports;
     }
 
+    private static String getAreaTitle(JSONObject jsonObject) {
+        String title = jsonObject.getString("title");
+        if (title == null) {
+            return "";
+        }
+        int transportIndex = title.indexOf("运");
+        if (transportIndex < 0) {
+            return title;
+        }
+        return title.substring(0, transportIndex);
+    }
+
     public static JSONObject getJson(String areaId) {
         // 获取不同地区机场id信息，返回JsonObject
         String url = UrlConstant.BASE_URL + "airmap?" + "a=1&" + "areaid=" + areaId + "&type=1&high=0&special=0";
@@ -73,29 +99,15 @@ public class AirportService {
         Document document = Jsoup.connect(url).get();
         Elements element = document.select(".airport_can");
         String str = element.text();
-        for (Element element1 : element) {
-            str = element1.text();
-        }
         String[] newStr = str.split(" ");
         List<String> list = Arrays.asList(newStr);
-
-        Map<Integer, String> fieldMap = new HashMap<>();
-        fieldMap.put(0, "Iata");
-        fieldMap.put(1, "Icao");
-        fieldMap.put(2, "Level");
-        fieldMap.put(3, "Altitude");
-        fieldMap.put(4, "Type");
-        fieldMap.put(5, "Runway");
-        fieldMap.put(7, "Latitude");
-        fieldMap.put(8, "Longitude");
-        fieldMap.put(10, "Address");
 
         for (int i = 0; i < list.size(); i++) {
             String value = list.get(i);
             if (!value.contains(":"))
                 continue;
 
-            String fieldName = fieldMap.get(i);
+            String fieldName = AIRPORT_DETAIL_FIELD_MAP.get(i);
             if (fieldName != null) {
                 value = value.substring(value.indexOf(":") + 1);
                 setField(airport, fieldName, value);
@@ -141,29 +153,32 @@ public class AirportService {
     public void start() throws IOException {
         String[] areaIds = UrlConstant.AREAIDS;
         List<Area> areaList = new ArrayList<>();
-        String id = "1";
-        // for (String id : areaIds) {
-        JSONObject jsonObject = getJson(id);
-        // 获取地区名称
-        String areaName = jsonObject.get("title").toString();
-        // 拿到各地区运输机场列表
-        List<Airport> list = getAirports(jsonObject);
-        // 完善数据
-        List<Airport> airports = new ArrayList<>();
-        for (Airport airport : list) {
-            airport = setAirport(airport.getId(), airport);
-            airports.add(airport);
+        for (String id : areaIds) {
+            JSONObject jsonObject = getJson(id);
+            // 获取地区名称
+            String areaName = jsonObject.getString("title");
+            // 拿到各地区运输机场列表
+            List<Airport> list = getAirports(jsonObject);
+            // 完善数据
+            List<Airport> airports = new ArrayList<>();
+            for (Airport airport : list) {
+                airport = setAirport(airport.getId(), airport);
+                airports.add(airport);
+            }
+            Area area = new Area();
+            area.setAreaId(id);
+            area.setList(airports);
+            area.setAreaName(areaName);
+            areaList.add(area);
         }
-        Area area = new Area();
-        area.setAreaId(id);
-        area.setList(airports);
-        area.setAreaName(areaName);
-
+        Collections.sort(areaList);
+        List<Airport> airports = new ArrayList<>();
+        for (Area area : areaList) {
+            airports.addAll(area.getList());
+        }
         for (Airport airport : airports) {
             System.out.println(airport);
         }
-        areaList.add(area);
-        // }
         ExcelUtil.ExportExcel(airports);
     }
 }

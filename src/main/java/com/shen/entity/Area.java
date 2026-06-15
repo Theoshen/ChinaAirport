@@ -2,7 +2,6 @@ package com.shen.entity;
 
 import lombok.Data;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -24,6 +23,6 @@ public class Area implements Comparable<Area> {
 
     @Override
     public int compareTo(Area o) {
-        return (Integer.parseInt(this.areaId) - Integer.parseInt(o.areaId));
+        return Integer.compare(Integer.parseInt(this.areaId), Integer.parseInt(o.areaId));
     }
 }

@@ -4,8 +4,6 @@ package com.shen.entity;
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import lombok.Data;
 
-import java.math.BigDecimal;
-
 /**
  * @author chensihua
  * @version 1.0.0
@@ -41,10 +39,10 @@ public class Airport {
     @Excel(name = "机场类型",  width = 15)
     private String type;
 
-    @Excel(name = "经度",  width = 30)
+    @Excel(name = "纬度",  width = 30)
     private String latitude;
 
-    @Excel(name = "纬度",  width = 30)
+    @Excel(name = "经度",  width = 30)
     private String longitude;
 
     @Excel(name = "海拔",  width = 15)
